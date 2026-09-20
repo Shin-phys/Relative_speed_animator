@@ -38,7 +38,7 @@ export function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <h1>相対速度アニメーター</h1>
+        <h1>のってわかる 相対速度</h1>
         <button className="big" onClick={() => setPanel((v) => !v)} aria-expanded={panel}>条件設定</button>
         <div className="seg" role="group" aria-label="観測者">
           {(['A', 'B', 'ground'] as Observer[]).map((o) => (
