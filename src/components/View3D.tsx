@@ -21,6 +21,7 @@ export function View3D() {
   const instRef = useRef<unknown>(null);
   const viewDir = useStore((s) => s.viewDir);
   const observer = useStore((s) => s.observer);
+  const hfov = useStore((s) => s.hfov);
   const set = useStore((s) => s.set);
   const hide = () => set({ show3d: false });
 
@@ -43,7 +44,7 @@ export function View3D() {
         scene.setScenario(s.inst);
         instRef.current = s.inst;
       }
-      const { camPos, heading } = scene.render({ t: s.t, observer: s.observer, viewDir: s.viewDir, groundPos: s.groundPos, info: s.info });
+      const { camPos, heading } = scene.render({ t: s.t, observer: s.observer, viewDir: s.viewDir, groundPos: s.groundPos, info: s.info, hfov: s.hfov });
       // オーバーレイ（方位インジケータ）
       const targetId = s.observer === 'B' ? 'A' : 'B';
       const inst = s.inst;
@@ -68,6 +69,7 @@ export function View3D() {
         bearing,
         trail,
         viewOffset: VIEW_OFFSET_DEG[s.viewDir],
+        hfov: s.hfov,
         target: tp,
         hints: s.hints3d,
         dist,
@@ -94,6 +96,10 @@ export function View3D() {
             </button>
           ))}
         </div>
+        <label className="fov">視野角
+          <input type="range" min={40} max={140} step={5} value={hfov} onChange={(e) => set({ hfov: Number(e.target.value) })} aria-label="視野角（水平）" />
+          <span>{hfov}°</span>
+        </label>
         <button className="ghost" onClick={hide} title="この画面を隠す">隠す</button>
       </header>
       <div className="canvas-wrap" ref={wrap}>

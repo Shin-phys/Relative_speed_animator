@@ -22,6 +22,8 @@ export interface AppState {
   observer: Observer;
   groundPos: Vec2;
   viewDir: ViewDir;
+  /** 水平視野角 [deg] */
+  hfov: number;
 
   // 画面の表示
   show3d: boolean;
@@ -76,6 +78,7 @@ export const useStore = create<AppState>((set, get) => ({
   observer: 'A',
   groundPos: { x: 0, y: -30 },
   viewDir: 'front',
+  hfov: 110,
 
   show3d: true,
   show2d: false,
@@ -152,6 +155,7 @@ export function stateToQuery(s: AppState): string {
   q.set('p', Object.entries(s.params).map(([k, v]) => `${k}:${v}`).join(','));
   q.set('obs', s.observer);
   q.set('dir', s.viewDir);
+  q.set('fov', String(s.hfov));
   q.set('first', s.firstView);
   if (s.hints3d) q.set('hint', '1');
   q.set('stage', String(s.initialStage));
@@ -186,6 +190,7 @@ export function applyQuery(search: string): void {
     ...derive(def.id, params),
     observer: obs === 'A' || obs === 'B' || obs === 'ground' ? obs : 'A',
     viewDir: dir === 'back' || dir === 'left' || dir === 'right' ? dir : 'front',
+    hfov: Math.min(140, Math.max(40, Number(q.get('fov') ?? 110) || 110)),
     firstView: first,
     show3d: first === '3d',
     show2d: first === '2d',

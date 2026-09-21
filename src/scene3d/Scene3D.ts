@@ -4,7 +4,7 @@ import { distToSegment, effectiveTime, headingOf, posAt, add, scale } from '../p
 import type { Closest } from '../physics/motion';
 import { makeBody } from './bodies';
 
-export const HFOV_DEG = 65;
+export const HFOV_DEFAULT = 110;
 const VIEW_ANGLE: Record<ViewDir, number> = { front: 0, left: Math.PI / 2, back: Math.PI, right: -Math.PI / 2 };
 
 export interface Render3D {
@@ -13,6 +13,7 @@ export interface Render3D {
   viewDir: ViewDir;
   groundPos: Vec2;
   info: Closest;
+  hfov: number;
 }
 
 const hash = (i: number, j: number): number => {
@@ -75,6 +76,7 @@ export class Scene3D {
   private flash: THREE.Mesh;
   private inst!: ScenarioInstance;
   private tmp = new THREE.Object3D();
+  private hfov = HFOV_DEFAULT;
 
   constructor(canvas: HTMLCanvasElement) {
     this.renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
@@ -201,7 +203,12 @@ export class Scene3D {
     this.renderer.setPixelRatio(Math.min(dpr, 2));
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
-    this.camera.fov = (2 * Math.atan(Math.tan((HFOV_DEG * Math.PI) / 360) / this.camera.aspect) * 180) / Math.PI;
+    this.applyFov();
+  }
+
+  /** 水平視野角から垂直視野角をアスペクト比で換算する */
+  private applyFov(): void {
+    this.camera.fov = (2 * Math.atan(Math.tan((this.hfov * Math.PI) / 360) / this.camera.aspect) * 180) / Math.PI;
     this.camera.updateProjectionMatrix();
   }
 
@@ -260,6 +267,10 @@ export class Scene3D {
 
   render(s: Render3D): { camPos: Vec2; heading: Vec2 } {
     const inst = this.inst;
+    if (s.hfov !== this.hfov) {
+      this.hfov = s.hfov;
+      this.applyFov();
+    }
     const tc = s.info.tCollision;
     const te = effectiveTime(s.t, tc);
     const pA = posAt(inst.A, te);

@@ -1,5 +1,4 @@
 import { BODY_CSS } from './bodies';
-import { HFOV_DEG } from './Scene3D';
 import { normDeg } from '../physics/motion';
 
 export interface OverlayInfo {
@@ -10,6 +9,7 @@ export interface OverlayInfo {
   trail: number[];
   /** 視点方向の方位オフセット */
   viewOffset: number;
+  hfov: number;
   target: { x: number; y: number; inFront: boolean };
   hints: boolean;
   dist: number;
@@ -28,7 +28,7 @@ export function drawOverlay(ctx: CanvasRenderingContext2D, w: number, h: number,
   ctx.fillRect(x0, y0, x1 - x0, sh);
   // 視野の範囲
   ctx.fillStyle = 'rgba(0,114,178,0.16)';
-  const half = HFOV_DEG / 2;
+  const half = o.hfov / 2;
   const lo = o.viewOffset - half, hi = o.viewOffset + half;
   const seg = (a: number, b: number) => ctx.fillRect(X(Math.max(a, -180)), y0, X(Math.min(b, 180)) - X(Math.max(a, -180)), sh);
   if (lo < -180) { seg(-180, hi); seg(lo + 360, 180); }

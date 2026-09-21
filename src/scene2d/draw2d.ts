@@ -10,7 +10,6 @@ export interface View2 {
 }
 
 export const GREEN = '#009e73';
-const HFOV = 65;
 const NICE = [1, 2, 5, 10, 20, 50, 100, 200, 500, 1000];
 
 /** 「次へ」で進められる最大の段階 */
@@ -246,7 +245,7 @@ export function draw2D(ctx: CanvasRenderingContext2D, w: number, h: number, view
     ctx.fillStyle = 'rgba(0,114,178,0.14)';
     ctx.strokeStyle = 'rgba(0,114,178,0.5)';
     ctx.lineWidth = 1;
-    const half = (HFOV / 2) * (Math.PI / 180);
+    const half = (s.hfov / 2) * (Math.PI / 180);
     ctx.beginPath();
     ctx.moveTo(sx, sy);
     ctx.arc(sx, sy, r, -phi - half, -phi + half);
